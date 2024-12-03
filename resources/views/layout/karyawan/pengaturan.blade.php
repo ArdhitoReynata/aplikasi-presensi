@@ -125,6 +125,7 @@
             </div>
         </div>
     </section>
+
     <script>
         // Fungsi untuk membuka modal
         function openPasswordModal() {
