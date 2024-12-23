@@ -7,10 +7,22 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PresensiController extends Controller
 {
+    public function generateQRCode()
+    {
+        $user = Auth::user();
+
+        // Validasi: Hanya admin yang bisa akses
+        if ($user->role !== 'admin') {
+            return response()->json(['error' => 'Anda tidak diizinkan untuk mengakses QR Code.'], 403);
+        }
+    }
+
     public function store(Request $request)
     {
         // Ambil data QR Code yang dikirimkan
@@ -62,6 +74,8 @@ class PresensiController extends Controller
         $presensi->keterangan = $request->input('keterangan');
         $presensi->image_path = $filePath;
         $presensi->save();
+        
+        Log::info('Data presensi berhasil diperbarui:', ['updated_data' => $presensi]);
 
         // Mengirimkan pesan sukses beserta nama user
         return response()->json([
@@ -156,7 +170,7 @@ class PresensiController extends Controller
             ->whereIn('status', ['Izin', 'Sakit'])
             ->count();
 
-        $totalUsers2 = $totalUsers * 7;
+        $totalUsers2 = $totalUsers * 5;
 
         $tidakHadirCount = $totalUsers2 - ($hadirCount + $izinSakitCount);
 
@@ -177,21 +191,28 @@ class PresensiController extends Controller
         // Hitung jumlah total pengguna
         $totalUsers = User::count();
 
-        // Hitung jumlah presensi berdasarkan status dalam bulan ini
+        // Hitung jumlah presensi berdasarkan status pada hari kerja (Senin-Jumat)
         $hadirCount = Presensi::whereBetween('timestamp', [$startOfMonth, $endOfMonth])
+            ->whereRaw('DAYOFWEEK(timestamp) NOT IN (1, 7)') // Kecualikan Minggu (1) dan Sabtu (7)
             ->where('status', 'Hadir')
             ->count();
 
         $izinSakitCount = Presensi::whereBetween('timestamp', [$startOfMonth, $endOfMonth])
+            ->whereRaw('DAYOFWEEK(timestamp) NOT IN (1, 7)') // Kecualikan Minggu (1) dan Sabtu (7)
             ->whereIn('status', ['Izin', 'Sakit'])
             ->count();
 
-        // Hitung total kemungkinan kehadiran dalam bulan ini
-        $totalDaysInMonth = Carbon::now()->daysInMonth;
-        $totalUsersInMonth = $totalUsers * $totalDaysInMonth;
+        // Hitung total kemungkinan kehadiran dalam hari kerja bulan ini
+        $totalWorkDaysInMonth = Carbon::now()
+            ->startOfMonth()
+            ->daysUntil(Carbon::now()->endOfMonth())
+            ->filter(fn($date) => !in_array($date->dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]))
+            ->count();
+
+        $totalUsersInWorkDays = $totalUsers * $totalWorkDaysInMonth;
 
         // Hitung jumlah pengguna yang Tidak Hadir
-        $tidakHadirCount = $totalUsersInMonth - ($hadirCount + $izinSakitCount);
+        $tidakHadirCount = $totalUsersInWorkDays - ($hadirCount + $izinSakitCount);
 
         // Format data untuk frontend
         $presensiData = [
@@ -202,6 +223,7 @@ class PresensiController extends Controller
 
         return response()->json($presensiData);
     }
+    
     public function getPresensiTahun($year)
     {
         $presensiData = Presensi::selectRaw('MONTH(timestamp) as month, 
@@ -214,5 +236,106 @@ class PresensiController extends Controller
             ->get();
 
         return response()->json($presensiData);
+    }
+
+    public function formPerizinan()
+    {
+        $userId = Auth::id();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        // Hitung jumlah hadir
+        $hadir = Presensi::where('user_id', $userId)
+            ->whereBetween('timestamp', [$startOfMonth, $endOfMonth])
+            ->where('status', 'Hadir')
+            ->count();
+
+        // Ambil data izin dan sakit
+        $izinSakit = Presensi::where('user_id', $userId)
+            ->whereBetween('timestamp', [$startOfMonth, $endOfMonth])
+            ->whereIn('status', ['Izin', 'Sakit'])
+            ->orderBy('timestamp', 'desc')
+            ->get();
+
+        // Hitung total hari dalam bulan
+        $totalHari = Carbon::now()->daysInMonth;
+
+        // Hitung jumlah tidak hadir
+        $tidakHadir = $totalHari - ($hadir + $izinSakit->count());
+
+        // Hitung persentase
+        $hadirPersen = ($totalHari > 0) ? ($hadir / $totalHari) * 100 : 0;
+        $izinPersen = ($totalHari > 0) ? ($izinSakit->count() / $totalHari) * 100 : 0;
+        $tidakHadirPersen = ($totalHari > 0) ? ($tidakHadir / $totalHari) * 100 : 0;
+
+        // Return ke blade dengan data lengkap
+        return view('layout.karyawan.perizinan', [
+            'hadir' => $hadir,
+            'izinSakit' => $izinSakit, // Daftar data izin/sakit
+            'tidakHadir' => $tidakHadir,
+            'totalHari' => $totalHari,
+            'hadirPersen' => $hadirPersen,
+            'izinPersen' => $izinPersen,
+            'tidakHadirPersen' => $tidakHadirPersen
+        ]);
+    }
+
+    public function getFormPerizinanData($user_id)
+    {
+        // Mengambil tanggal hari ini dalam format Y-m-d
+        $today = Carbon::now()->toDateString();
+
+        Log::info("Mencari data untuk user_id: $user_id pada tanggal: $today");
+
+        // Mencari data presensi berdasarkan user_id dan tanggal hari ini
+        $presensi = Presensi::where('user_id', $user_id)
+            ->whereDate('timestamp', $today)
+            ->first();
+
+        if ($presensi) {
+            return response()->json($presensi);
+        } else {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+    }
+    public function updatePresensi(Request $request, $user_id)
+    {
+        Log::info('Request Method: ' . $request->method());
+        Log::info('Request Data: ' . json_encode($request->all()));
+        // Mengambil tanggal hari ini dalam format Y-m-d
+        $today = Carbon::now()->toDateString();
+
+        // Mencari data presensi berdasarkan user_id dan tanggal hari ini
+        $presensi = Presensi::where('user_id', $user_id)
+            ->whereDate('timestamp', $today)
+            ->first();
+
+        Log::info('Data yang ditemukan:', ['data' => $presensi]);
+
+        if (!$presensi) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+        // Validasi request
+        $validated = $request->validate([
+            'status' => 'required|string', // pastikan status ada dan berupa string
+            'keterangan' => 'nullable|string', // keterangan boleh kosong
+            'tanggal_perizinan' => 'required|date', // validasi tanggal_perizinan
+        ]);
+
+        Log::info('Data validasi berhasil:', ['validated_data' => $validated]);
+
+        // Update data jika ditemukan
+        $presensi->status = $validated['status'];
+        $presensi->keterangan = $validated['keterangan'] ?? $presensi->keterangan; // jika keterangan tidak ada, biarkan tetap yang lama
+
+        // Mengupdate tanggal_perizinan
+        $presensi->timestamp = $validated['tanggal_perizinan'];
+
+        // Simpan perubahan ke database
+        $presensi->save();
+
+        Log::info('Data presensi berhasil diperbarui:', ['updated_data' => $presensi]);
+
+        return response()->json(['message' => 'Data berhasil diperbarui!']);
     }
 }

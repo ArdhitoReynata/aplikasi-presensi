@@ -82,59 +82,78 @@
                             Ubah Password
                         </button>
                     </div>
-
-                    <!-- Modal untuk mengubah password -->
-                    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
-                        <div class="bg-white rounded-md w-96">
-                            <div class="bg-btncolor rounded-t-md p-4">
-                                <h2 class="text-16 font-bold text-white">Ubah Password</h2>
-                            </div>
-                            <!-- Form untuk mengubah password -->
-                            <form id="passwordForm" action="{{ route('profile.updatePassword') }}" method="POST" class="p-5">
+                    <div id="passwordModal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                        <div class="bg-white rounded-lg p-6 w-1/3">
+                            <h2 class="text-lg font-semibold mb-4">Ubah Password</h2>
+                            <form id="changePasswordForm" method="POST" action="{{ route('profile.updatePassword') }}">
                                 @csrf
-                                <div class="mb-3">
-                                    <label for="current_password" class="block text-sm">Password Lama</label>
-                                    <input type="password" id="current_password" name="current_password" class="w-full border rounded p-2 mt-1" required>
-                                    @error('current_password')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
+                                <div class="mb-4">
+                                    <label for="current_password" class="block text-sm font-medium">Password Lama</label>
+                                    <input type="password" id="current_password" name="current_password" class="w-full border rounded-md p-2" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="new_password" class="block text-sm">Password Baru</label>
-                                    <input type="password" id="new_password" name="new_password" class="w-full border rounded p-2 mt-1" required>
-                                    @error('new_password')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
+                                <div class="mb-4">
+                                    <label for="new_password" class="block text-sm font-medium">Password Baru</label>
+                                    <input type="password" id="new_password" name="new_password" class="w-full border rounded-md p-2" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="new_password_confirmation" class="block text-sm">Konfirmasi Password Baru</label>
-                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="w-full border rounded p-2 mt-1" required>
-                                    @error('new_password_confirmation')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
+                                <div class="mb-4">
+                                    <label for="new_password_confirmation" class="block text-sm font-medium">Konfirmasi Password Baru</label>
+                                    <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="w-full border rounded-md p-2" required>
                                 </div>
-                                <div class="flex justify-between">
-                                    <button type="submit" class="bg-btncolor text-white rounded px-4 py-2">Simpan Perubahan</button>
-                                    <button type="button" onclick="closePasswordModal()" class="bg-gray-300 text-black rounded px-4 py-2">Batal</button>
+                                <div class="flex justify-end space-x-4">
+                                    <button type="button" class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded-md" onclick="closePasswordModal()">Batal</button>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Simpan</button>
                                 </div>
                             </form>
+                            <div id="passwordMessage" class="text-red-500 text-sm mb-2 hidden"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </section>
 
     <script>
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah pengiriman form secara default
+
+            console.log('Form submission prevented'); // Debug: memastikan event ini aktif
+
+            const formData = new FormData(e.target);
+
+            fetch(e.target.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest', // Header tambahan untuk request AJAX
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Debug: lihat respons dari server
+                    const messageDiv = document.getElementById('passwordMessage');
+                    if (data.success) {
+                        messageDiv.textContent = data.message;
+                        messageDiv.classList.remove('hidden', 'text-red-500');
+                        messageDiv.classList.add('text-green-500');
+                    } else {
+                        messageDiv.textContent = data.message;
+                        messageDiv.classList.remove('hidden', 'text-green-500');
+                        messageDiv.classList.add('text-red-500');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const messageDiv = document.getElementById('passwordMessage');
+                    messageDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                    messageDiv.classList.remove('hidden', 'text-green-500');
+                    messageDiv.classList.add('text-red-500');
+                });
+        });
+
         // Fungsi untuk membuka modal
         function openPasswordModal() {
             document.getElementById('passwordModal').classList.remove('hidden');
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            openPasswordModal();
-        });
         // Fungsi untuk menutup modal
         function closePasswordModal() {
             document.getElementById('passwordModal').classList.add('hidden');

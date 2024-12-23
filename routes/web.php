@@ -43,6 +43,10 @@ Route::group(['middleware' => 'auth:admin'], function () {
         return view('layout.admin.karyawan.tambahkaryawan');
     });
 
+    Route::get('/admin/karyawan/datakaryawan', function () {
+        return view('layout.admin.karyawan.datakaryawan');
+    });
+
     Route::post('/admin/karyawan/tambahkaryawan', function () {
         $data = request()->validate([
             'nama' => 'required|string|max:255',
@@ -98,10 +102,8 @@ Route::group(['middleware' => 'auth:karyawan'], function () {
         return view('layout.karyawan.kodeqr', compact('user'));
     });
 
-    Route::get('/karyawan/perizinan', function () {
-        $user = Auth::user();
-        return view('layout.karyawan.perizinan', compact('user'));
-    });
+    Route::get('/karyawan/perizinan', [PresensiController::class, 'formPerizinan']);
+    Route::get('/ambilData/{user_id}', [PresensiController::class, 'getFormPerizinanData']);
 
     Route::get('/karyawan/cuti', function () {
         return view('layout.karyawan.cuti');
@@ -115,13 +117,14 @@ Route::group(['middleware' => 'auth:karyawan'], function () {
         $user = Auth::user();
         return view('layout.karyawan.pengaturan', compact('user'));
     });
+    Route::put('/updatePresensi/{user_id}', [PresensiController::class, 'updatePresensi']);
     Route::post('/presensi', [PresensiController::class, 'store']);
     Route::get('/presensi', [PresensiController::class, 'index']);
     Route::get('/karyawan/kehadiran', [PresensiController2::class, 'index']);
     Route::get('/karyawan/kehadiran', [PresensiController2::class, 'showLaporan']);
     Route::get('/karyawan/home', [PresensiController2::class, 'showLaporan2']);
     Route::post('/karyawan/pengaturan', [UserController::class, 'updateProfileImage'])->name('profile.updateImage');
-    Route::post('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::post('/karyawan/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
 });
 
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');

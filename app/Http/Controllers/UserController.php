@@ -42,7 +42,7 @@ class UserController extends Controller
         if ($request->hasFile('profile_image')) {
             $image = $request->file('profile_image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('public/profile_images', $imageName);
+            $path = $image->storeAs('profile_images', $imageName);
 
             // Update nama file gambar di database
             $user->profile_image = $path;
@@ -56,25 +56,25 @@ class UserController extends Controller
     }
     public function updatePassword(Request $request)
     {
-        // Validasi input
         $request->validate([
-            'current_password' => 'required', // Password lama harus diisi
-            'new_password' => 'required|min:8|confirmed', // Password baru harus ada, minimal 8 karakter, dan terkonfirmasi
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
         ]);
 
-        // Ambil user yang sedang login
         $user = Auth::user();
 
-        // Verifikasi password lama
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password lama tidak sesuai']);
+            return response()->json(['success' => false, 'message' => 'Password lama tidak sesuai.'], 422);
         }
 
-        // Update password baru
-        $user->password = Hash::make($request->new_password); // Encrypt password baru
+        if ($request->current_password === $request->new_password) {
+            return response()->json(['success' => false, 'message' => 'Password baru tidak boleh sama dengan password lama.'], 422);
+        }
+
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
-        // Redirect kembali dengan pesan sukses
-        return back()->with('success', 'Password berhasil diperbarui');
+        return response()->json(['success' => true, 'message' => 'Password berhasil diperbarui.']);
     }
+
 }

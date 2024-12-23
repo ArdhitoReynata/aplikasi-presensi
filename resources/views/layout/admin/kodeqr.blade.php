@@ -11,13 +11,7 @@
 
 <body class="bg-bgcolor">
   <section id="app" class="bg-bgcolor flex">
-    @auth
-    <navbar :user="{{ json_encode(Auth::user()) }}"></navbar>
-    @else
-    <navbar :user="null"></navbar>
-    @endauth
-    <sidebar></sidebar>
-    <div class="ml-[68px] lg:ml-64 mt-16 w-full p-5">
+    <div class="w-full h-full">
         <kodeqr></kodeqr>
     </div>
   </section>

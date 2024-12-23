@@ -62,7 +62,9 @@
                 </thead>
                 <tbody class="font-normal text-12 md:text-13 lg:text-14" id="presensi-table-body">
                   @foreach($userPresensi as $presensi)
-                  <tr onclick="toggleCheckbox(this)" class="hover-row hover:bg-bgcolor cursor-pointer h-full {{ $presensi['status']  == 'Tidak Hadir' ? 'bg-red-50' : '' }}" data-status="{{ $presensi['status']}}">
+                  <tr class="hover-row hover:bg-bgcolor cursor-pointer h-full {{ $presensi['status']  == 'Tidak Hadir' ? 'bg-red-50' : '' }}" data-status="{{ $presensi['status']}}" data-keterangan="{{ $presensi['keterangan'] ?? '-' }}"
+                    data-short-keterangan="{{ \Illuminate\Support\Str::limit($presensi['keterangan'] ?? '-', 60, '...') }}"
+                    onclick="toggleDescription(this)">
                     <td class="px-4 py-2">{{ $presensi['user']->nip }}</td>
                     <td class="p-2">{{ $presensi['user']->nama }}</td>
                     <td class="p-2 {{ $presensi['status'] == 'Tidak Hadir' ? 'text-dangercolor  font-semibold' : '' }}">{{ $presensi['status'] }}</td>
@@ -71,7 +73,9 @@
                     </td>
                     <td class="p-2">
                       @if(!is_null($presensi['keterangan']))
-                      {{ $presensi['keterangan'] }}
+                      <span class="keterangan-cell">
+                        {{ \Illuminate\Support\Str::limit($presensi['keterangan'] ?? '-', 60, '...') }}
+                      </span>
                       @else
                       @php
                       $presensiTime = $presensi['timestamp'] ? \Carbon\Carbon::parse($presensi['timestamp']) : null;
@@ -112,12 +116,6 @@
                       <button class="flex items-center justify-center rounded w-6 h-6 bg-btncolor2 p-0.5 hover:bg-btncolor transition duration-200 ease-in-out">
                         <a href="{{ asset($presensi['image_path']) }}" target="_blank">
                           <img src="/images/file-check.svg" alt="">
-                        </a>
-                      </button>
-                      @else
-                      <button class="flex items-center justify-center rounded w-6 h-6 bg-dangercolor p-0.5">
-                        <a>
-                          <img src="/images/file-wrong.svg" alt="">
                         </a>
                       </button>
                       @endif
@@ -223,6 +221,22 @@
             row.style.display = rowText.includes(searchTerm) ? '' : 'none';
           });
         });
+      }
+    }
+
+    function toggleDescription(row) {
+      // Ambil elemen kolom keterangan
+      const keteranganCell = row.querySelector('.keterangan-cell');
+
+      // Ambil data keterangan lengkap dan pendek
+      const keteranganLengkap = row.getAttribute('data-keterangan');
+      const keteranganPendek = row.getAttribute('data-short-keterangan');
+
+      // Cek teks saat ini, lalu toggle
+      if (keteranganCell.textContent === keteranganPendek) {
+        keteranganCell.textContent = keteranganLengkap; // Tampilkan deskripsi lengkap
+      } else {
+        keteranganCell.textContent = keteranganPendek; // Tampilkan deskripsi pendek
       }
     }
   </script>

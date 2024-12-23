@@ -12,11 +12,11 @@
         <a class="font-inter text-9 xs:text-10 md:text-10 lg:text-11 xl:text-12 font-bold text-tbcolor">Hadir</a>
       </div>
       <div class="flex flex-row items-center justify-center mb-4">
-        <div class="w-2 h-2 bg-btncolor2 rounded-sm mr-1"></div>
+        <div class="w-2 h-2 bg-warningcolor rounded-sm mr-1"></div>
         <a class="font-inter text-9 xs:text-10 md:text-10 lg:text-11 xl:text-12 font-bold text-tbcolor">Izin/Sakit</a>
       </div>
       <div class="flex flex-row items-center justify-center">
-        <div class="w-2 h-2 bg-btncolor3 rounded-sm mr-1"></div>
+        <div class="w-2 h-2 bg-dangercolor rounded-sm mr-1"></div>
         <a class="font-inter text-9 xs:text-10 md:text-10 lg:text-11 xl:text-12 font-bold text-tbcolor">Tidak Hadir</a>
       </div>
     </div>
@@ -76,7 +76,7 @@ export default {
             datasets: [
               {
                 data: data.map(item => item.count), // Jumlah
-                backgroundColor: ['#2D6A4F', '#40916C', '#52B788'], // Warna
+                backgroundColor: ['#2D6A4F', '#FEC901', '#DC3545'], // Warna
                 borderColor: 'white',
                 borderWidth: 0.5,
               },

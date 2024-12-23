@@ -14,7 +14,9 @@ class Presensi extends Model
         'user_id',
         'timestamp',
         'status',
+        'keterangan',
         'qr_code_data',
+        'image_path',
     ];
     public function user()
     {

@@ -70,9 +70,7 @@
                         </div>
                     </div>
                 </button>
-                <a class="font-inter lg:text-sm text-xs font-medium bg-btncolor text-white p-10 py-2 rounded-md hover:bg-btncolor2 transition-all duration-300 transform hover:scale-105 hover:text-white"
-                    href="/logout">Keluar
-                </a>
+                
             </div>
         </nav>
     </body>

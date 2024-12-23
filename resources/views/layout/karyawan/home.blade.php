@@ -18,13 +18,13 @@
                 <div class="grid border col-span-4 md:col-span-2 lg:col-span-1 border-strcolor bg-white rounded-lg p-2">
                     <div class="flex items-center">
                         <img class="flex items-center w-4" src="/images/qr-black.svg" alt="Tes">
-                        <p class="font-semibold text-14 ml-1.5">Scan Kode QR</p>
+                        <p class="font-semibold text-14 ml-1.5">Kode QR</p>
                     </div>
                     <div class="flex mb-1 mt-0.5">
-                        <p class="font-reguler text-12 text-justify">Silahkan pindai Kode QR yang tersedia untuk mencatat kehadiran Anda. Pastikan Anda berada di area yang telah ditentukan untuk melakukan proses ini.</p>
+                        <p class="font-reguler text-12 text-left">Silahkan cetak Kode QR yang tersedia untuk mencatat kehadiran Anda. Pastikan Anda berada di area yang telah ditentukan untuk melakukan proses ini.</p>
                     </div>
-                    <div class="flex justify-end">
-                        <a href="" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
+                    <div class="flex items-end mt-2">
+                        <a href="kodeqr" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
                     </div>
                 </div>
                 <div class="grid border col-span-4 md:col-span-2 lg:col-span-1 border-strcolor bg-white rounded-lg p-2">
@@ -33,10 +33,10 @@
                         <p class="font-semibold text-14 ml-1.5">Perizinan Kerja</p>
                     </div>
                     <div class="flex mb-1 mt-0.5">
-                        <p class="font-reguler text-12 text-justify">Silahkan isi perizinan kerja jika Anda berhalangan hadir, baik untuk urusan pribadi, atau sakit. Pastikan Anda mengisi data secara lengkap dan akurat.</p>
+                        <p class="font-reguler text-12 text-left">Silahkan isi perizinan kerja jika Anda berhalangan hadir, baik untuk urusan pribadi, atau sakit. Pastikan Anda mengisi data secara lengkap dan akurat.</p>
                     </div>
-                    <div class="flex justify-end">
-                        <a href="" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
+                    <div class="flex items-end mt-2">
+                        <a href="perizinan" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
                     </div>
                 </div>
                 <div class="grid border col-span-4 md:col-span-2 lg:col-span-1 border-strcolor bg-white rounded-lg p-2">
@@ -45,10 +45,10 @@
                         <p class="font-semibold text-14 ml-1.5">Pengajuan Cuti</p>
                     </div>
                     <div class="flex mb-1 mt-0.5">
-                        <p class="font-reguler text-12 text-justify">Silahkan ajukan cuti tahunan, cuti sakit, atau cuti lainnya sesuai dengan kebijakan perusahaan jika Anda. Pastikan Anda mengajukan cuti dengan waktu yang cukup.</p>
+                        <p class="font-reguler text-12 text-left">Silahkan ajukan cuti tahunan, cuti sakit, atau cuti lainnya sesuai dengan kebijakan perusahaan jika Anda. Pastikan Anda mengajukan cuti dengan waktu yang cukup.</p>
                     </div>
-                    <div class="flex justify-end">
-                        <a href="" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
+                    <div class="flex items-end mt-2">
+                        <a href="cuti" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
                     </div>
                 </div>
                 <div class="grid border col-span-4 md:col-span-2 lg:col-span-1 border-strcolor bg-white rounded-lg p-2">
@@ -57,10 +57,10 @@
                         <p class="font-semibold text-14 ml-1.5">Kelola Data Pribadi Anda</p>
                     </div>
                     <div class="flex mb-1 mt-0.5">
-                        <p class="font-reguler text-12 text-justify">Anda dapat memperbarui data pribadi Anda, seperti nama, alamat, nomor telepon, dan data pribadi lainnya. Misalnya, jika Anda pindah tempat tinggal dan lain-lain.</p>
+                        <p class="font-reguler text-12 text-left">Anda dapat memperbarui data pribadi Anda, seperti nama, alamat, nomor telepon, dan data pribadi lainnya. Misalnya, jika Anda pindah tempat tinggal dan lain-lain.</p>
                     </div>
-                    <div class="flex justify-end">
-                        <a href="" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
+                    <div class="flex items-end mt-2">
+                        <a href="pengaturan" class="flex bg-btncolor2 h-full rounded-md w-full text-white font-semibold text-12 justify-center items-center py-1.5">Selengkapnya</a>
                     </div>
                 </div>
                 <div class="grid col-span-4 border border-strcolor bg-white w-full rounded-lg">
