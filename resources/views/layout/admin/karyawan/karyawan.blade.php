@@ -118,10 +118,9 @@
                                             {{ $user->bagian }}
                                         </td>
                                         <td class="p-2 h-full place-items-center">
-                                            <button class="flex items-center rounded w-6 h-6 bg-btncolor2 p-0.5">
-                                                <a href=""></a>
+                                            <a href="{{ route('employee.show', ['nip' => $user->nip]) }}" class="flex items-center rounded w-6 h-6 bg-btncolor2 hover:bg-btncolor hover:scale-105 p-0.5">
                                                 <img src="/images/point-white.svg" alt="">
-                                            </button>
+                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach

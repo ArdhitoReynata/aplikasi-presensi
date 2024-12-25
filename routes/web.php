@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Karyawan\HomeController as KaryawanHomeController;
+use App\Http\Controllers\LihatController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PresensiController2;
 use App\Http\Controllers\UserController;
@@ -43,9 +44,32 @@ Route::group(['middleware' => 'auth:admin'], function () {
         return view('layout.admin.karyawan.tambahkaryawan');
     });
 
-    Route::get('/admin/karyawan/datakaryawan', function () {
-        return view('layout.admin.karyawan.datakaryawan');
-    });
+    Route::get('/admin/karyawan/data/{nip}', [LihatController::class, 'show'])->name('employee.show');
+
+    Route::get('/admin/karyawan/edit/{nip}', function ($nip) {
+        $employee = DB::table('users')->where('nip', $nip)->first();
+        return view('layout.admin.karyawan.editkaryawan', compact('employee'));
+    })->name('admin.karyawan.edit');
+    
+    Route::post('/admin/karyawan/edit/{nip}', function ($nip) {
+        // Validasi data
+        $data = request()->validate([
+            'nama' => 'required|string|max:255',
+            'nip' => 'required|string|max:40',
+            'nik' => 'required|string|max:40',
+            'email' => 'required|email|max:255',
+            'telepon' => 'required|string|max:20',
+            'alamat' => 'required|string|max:255',
+            'jk' => 'required|string|max:40',
+            'divisi' => 'required|string|max:50',
+            'bagian' => 'required|string|max:50',
+        ]);
+    
+        DB::table('users')->where('nip', $nip)->update($data);
+    
+        return redirect()->route('employee.show', ['nip' => $data['nip']])
+        ->with('success', 'Data karyawan berhasil diperbarui.');
+    })->name('admin.karyawan.update');
 
     Route::post('/admin/karyawan/tambahkaryawan', function () {
         $data = request()->validate([
