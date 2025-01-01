@@ -27,3 +27,4 @@ class RedirectIfAuthenticated extends RedirectIfAuthenticatedMiddleware
         return $next($request);
     }
 }
+

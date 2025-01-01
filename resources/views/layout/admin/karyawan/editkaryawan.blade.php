@@ -23,7 +23,7 @@
                         <p class="flex justify-start font-medium text-16 ml-2">Data Karyawan</p>
                         <div class="flex flex-row items-center">
                             <a href="{{ route('employee.show', $employee->nip) }}">
-                                <p class="text-12 font-semibold text-btncolor4 ml-2 mr-1">Informasi Karyawan</p>
+                                <p class="text-12 font-semibold text-btncolor4 ml-2 mr-1 hover:text-btncolor">Informasi Karyawan</p>
                             </a>
                             <img src="/images/arrow-black.svg" alt="" class="w-4">
                             <p class="text-12 font-semibold text-btncolor ml-1 mr-1">Edit Karyawan</p>

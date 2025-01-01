@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Karyawan\HomeController as KaryawanHomeController;
 use App\Http\Controllers\LihatController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PresensiController2;
@@ -16,11 +14,16 @@ use Illuminate\Support\Str; // Add this line at the top with your use statements
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 Route::get('/', [AuthController::class, 'index'])->name('login')->middleware('guest');
+
 Route::post('/', [AuthController::class, 'verify'])->name('auth.verify');
+
+
 
 Route::group(['middleware' => 'auth:admin'], function () {
 
-    Route::get('/admin/home', [HomeController::class, 'index'])->name('admin.home.index');
+    Route::get('/admin/home', function () {
+        return view('layout.admin.home');
+    })->name('admin.home.index');
 
     Route::get('/presensi-data', [PresensiController::class, 'getPresensiHariIni'])->name('admin.home.getPresensiHariIni');
     Route::get('/presensi-minggu-ini', [PresensiController::class, 'getPresensiMingguIni'])->name('admin.home.getPresensiMingguIni');
@@ -119,7 +122,11 @@ Route::group(['middleware' => 'auth:admin'], function () {
 });
 
 Route::group(['middleware' => 'auth:karyawan'], function () {
-    Route::get('/karyawan/home', [KaryawanHomeController::class, 'index'])->name('karyawan.home.index');
+    
+    Route::get('/karyawan/home', function(){
+        return view('layout.karyawan.home');
+    })->name('karyawan.home.index');
+    
 
     Route::get('/karyawan/kodeqr', function () {
         $user = Auth::user();
@@ -146,7 +153,6 @@ Route::group(['middleware' => 'auth:karyawan'], function () {
     Route::get('/presensi', [PresensiController::class, 'index']);
     Route::get('/karyawan/kehadiran', [PresensiController2::class, 'index']);
     Route::get('/karyawan/kehadiran', [PresensiController2::class, 'showLaporan']);
-    Route::get('/karyawan/home', [PresensiController2::class, 'showLaporan2']);
     Route::post('/karyawan/pengaturan', [UserController::class, 'updateProfileImage'])->name('profile.updateImage');
     Route::post('/karyawan/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
 });

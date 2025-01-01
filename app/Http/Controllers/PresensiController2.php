@@ -64,33 +64,6 @@ class PresensiController2 extends Controller
 
         return view('layout.karyawan.kehadiran', compact('presensiByDate', 'month', 'year'));
     }
-    public function showLaporan2(Request $request)
-    {
-        $month = $request->input('month', date('m')); // Default to current month if not selected
-        $year = $request->input('year', date('Y'));   // Default to current year if not selected
-
-        $userId = Auth::id();
-        // Menentukan tanggal untuk dua bagian bulan (1-15 dan 16-30)
-        $datesFirstHalf = [];
-        for ($day = 1; $day <= 15; $day++) {
-            $datesFirstHalf[] = sprintf('%04d-%02d-%02d', $year, $month, $day);
-        }
-
-        $datesSecondHalf = [];
-        for ($day = 16; $day <= 30; $day++) {
-            $datesSecondHalf[] = sprintf('%04d-%02d-%02d', $year, $month, $day);
-        }
-
-        $presensiByDate = Presensi::where('user_id', $userId) // Filter berdasarkan user login
-            ->whereYear('timestamp', $year)
-            ->whereMonth('timestamp', $month)
-            ->get()
-            ->groupBy(function ($item) {
-                return Carbon::parse($item->timestamp)->format('Y-m-d'); // Group berdasarkan tanggal
-            });
-
-        return view('layout.karyawan.home', compact('presensiByDate', 'month', 'year'));
-    }
 }
 
 

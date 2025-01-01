@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 
 class AuthController extends Controller
@@ -22,6 +23,7 @@ class AuthController extends Controller
 
         if (Auth::guard('admin')->attempt(['nip' => $data['nip'], 'password' => $data['password'], 'role' => 'admin'])) {
             $request->session()->regenerate();
+            Log::info('Session ID after regenerate: ' . session()->getId());
             return redirect()->intended('/admin/home');
         } else if (Auth::guard('karyawan')->attempt(['nip' => $data['nip'], 'password' => $data['password'], 'role' => 'karyawan'])) {
             $request->session()->regenerate();
@@ -46,5 +48,11 @@ class AuthController extends Controller
         return response()->json([
             'nama' => Auth::user()->nama,
         ]);
+    }
+
+    public function show()
+    {
+        $sessionId = session()->getId();
+        return response()->json(['session_id' => $sessionId]);
     }
 }
